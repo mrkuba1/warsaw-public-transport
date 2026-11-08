@@ -29,7 +29,7 @@ class StopsPage extends StatefulWidget {
 
 class _StopsPageState extends State<StopsPage> {
   late final Future<BusstopsInfo> _stopsFuture;
-
+  String _query = '';
   @override
   void initState() {
     super.initState();
@@ -45,27 +45,45 @@ class _StopsPageState extends State<StopsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Przystanki')),
-      body: FutureBuilder<BusstopsInfo>(
-        future: _stopsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Błąd: ${snapshot.error}'));
-          }
-          final stops = snapshot.data!.stops;
-          return ListView.builder(
-            itemCount: stops.length,
-            itemBuilder: (context, i) {
-              final s = stops[i];
-              return ListTile(
-                title: Text('${s.name} ${s.smallid}'),
-                subtitle: Text(s.destination),
-              );
-            },
-          );
-        },
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Szukaj przystanku',
+                prefixIcon: Icon(Icons.search),
+              ),
+              onChanged: (value) {
+                setState(() => _query = value);
+              },
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder<BusstopsInfo>(
+              future: _stopsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Błąd: ${snapshot.error}'));
+                }
+                final stops = snapshot.data!.getBusstopsInfoByName(_query);
+                return ListView.builder(
+                  itemCount: stops.length,
+                  itemBuilder: (context, i) {
+                    final s = stops[i];
+                    return ListTile(
+                      title: Text('${s.name} ${s.smallid}'),
+                      subtitle: Text(s.destination),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
