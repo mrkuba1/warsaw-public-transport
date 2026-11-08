@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:warsaw_public_transport/data/core/bus_client.dart';
 
 import 'data/busstops/models/busstopsinfo.dart';
 
@@ -34,6 +35,7 @@ class _StopsPageState extends State<StopsPage> {
   void initState() {
     super.initState();
     _stopsFuture = _loadStops();
+    BusClient().getBusstopLines('7009', '01').then(print);
   }
 
   Future<BusstopsInfo> _loadStops() async {
