@@ -35,7 +35,9 @@ class _StopsPageState extends State<StopsPage> {
   void initState() {
     super.initState();
     _stopsFuture = _loadStops();
-    BusClient().getBusstopLines('7009', '01').then(print);
+    BusClient().getBusstopLines('7009', '01').then(
+          (result) => print(result.lines.map((l) => l.number).toList()),
+        );
   }
 
   Future<BusstopsInfo> _loadStops() async {
