@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:warsaw_public_transport/data/core/bus_client.dart';
 import 'package:warsaw_public_transport/data/timetables/models/busroute.dart';
+import 'package:warsaw_public_transport/pages/stop_departures_page.dart';
 
 import 'data/busstops/models/busstopsinfo.dart';
 
@@ -75,28 +76,34 @@ class _StopsPageState extends State<StopsPage> {
           ),
           Expanded(
             child: FutureBuilder<BusstopsInfo>(
-              future: _stopsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('Błąd: ${snapshot.error}'));
-                }
-                final stops = snapshot.data!.getBusstopsInfoByName(_query);
-                return ListView.builder(
-                  itemCount: stops.length,
-                  itemBuilder: (context, i) {
-                    final s = stops[i];
-                    return ListTile(
-                      title: Text('${s.name} ${s.smallid}'),
-                      subtitle: Text(s.destination),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
+                future: _stopsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Błąd: ${snapshot.error}'));
+                  }
+                  final stops = snapshot.data!.getBusstopsInfoByName(_query);
+                  return ListView.builder(
+                      itemCount: stops.length,
+                      itemBuilder: (context, i) {
+                        final s = stops[i];
+                        return ListTile(
+                          title: Text('${s.name} ${s.smallid}'),
+                          subtitle: Text(s.destination),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      StopDeparturesPage(stop: s),
+                                ));
+                          },
+                        );
+                      });
+                }),
+          )
         ],
       ),
     );
