@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:warsaw_public_transport/data/core/bus_client.dart';
+import 'package:warsaw_public_transport/data/timetables/models/busroute.dart';
 
 import 'data/busstops/models/busstopsinfo.dart';
 
@@ -35,9 +36,18 @@ class _StopsPageState extends State<StopsPage> {
   void initState() {
     super.initState();
     _stopsFuture = _loadStops();
-    BusClient().getBusstopLines('7009', '01').then(
-          (result) => print(result.lines.map((l) => l.number).toList()),
-        );
+    // BusClient().getBusstopLines('7009', '01').then(
+    //       (result) => print(result.lines.map((l) => l.number).toList()),
+    //     );
+    // BusClient().getBusRoutes('7009', '01', '182').then(print);
+    BusClient().getBusRoutes('7009', '01', '182').then((r) {
+      print('Wszystkich odjazdów dziś: ${r.routes.length}');
+      final next = BusRoute.sortBusRoutesByTime(r.routes).take(5);
+      for (final d in next) {
+        print(
+            '${d.time.hour}:${d.time.minute.toString().padLeft(2, '0')} → ${d.destination}');
+      }
+    });
   }
 
   Future<BusstopsInfo> _loadStops() async {
